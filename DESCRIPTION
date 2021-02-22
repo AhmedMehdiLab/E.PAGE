@@ -1,0 +1,33 @@
+Package: E.PAGE
+Type: Package
+Title: Environmental Pathways Affecting Gene Expression
+Version: 1.0.0
+Authors@R:
+    c(person("Lilin", "Yang", role = c("aut", "cre"),
+             email = "lilin.yang@uq.net.au"),
+      person("Ahmed", "Mehdi", role = "ctb",
+             email = "a.mehdi@imb.uq.edu.au"))
+Description: A package containing a curated database and enrichment tool to
+    predict modules associated with gene-environment interactions. This package
+    can also extract differentially-expressed genes from Seurat objects and
+    visually display enriched pathways. The functions used in this package are
+    based of those in the `glacier` package.
+Depends: R (>= 4.0.0)
+License: file LICENSE
+URL: https://github.com/AhmedMehdiLab/E-PAGE
+BugReports: https://github.com/AhmedMehdiLab/E-PAGE/issues
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
+Imports: 
+    Seurat (>= 3.2.3),
+    ggplot2 (>= 3.3.3),
+    magrittr (>= 2.0.1),
+    dplyr (>= 1.0.2),
+    tibble (>= 3.0.4),
+    rlang (>= 0.4.10),
+    forcats (>= 0.5.0),
+    purrr (>= 0.3.4),
+    readr (>= 1.4.0),
+    stringr (>= 1.4.0),
+    tidyr (>= 1.1.2)
