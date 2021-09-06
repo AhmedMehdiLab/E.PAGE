@@ -1,7 +1,7 @@
 # E.PAGE
 Environmental Pathways Affecting Gene Expression
 
-![build-macos](https://github.com/AhmedMehdiLab/E.PAGE/actions/workflows/build_macos.yml/badge.svg)
+![build](https://github.com/AhmedMehdiLab/E.PAGE/actions/workflows/r.yml/badge.svg)
 
 This is a data analysis package allowing the user with a list of genes of interest to find enriched environmental pathways using a curated database.
 
