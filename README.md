@@ -1,7 +1,8 @@
 # E.PAGE
-Environmental Pathways Affecting Gene Expression
 
 ![build](https://github.com/AhmedMehdiLab/E.PAGE/actions/workflows/r.yml/badge.svg)
+
+Environmental Pathways Affecting Gene Expression
 
 This is a data analysis package allowing the user with a list of genes of interest to find enriched environmental pathways using a curated database.
 
