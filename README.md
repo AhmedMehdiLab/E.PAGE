@@ -1,6 +1,6 @@
 # E.PAGE
 
-![build](https://github.com/AhmedMehdiLab/E.PAGE/actions/workflows/r.yml/badge.svg)
+![R CMD check](https://github.com/AhmedMehdiLab/E.PAGE/actions/workflows/r.yml/badge.svg)
 
 Environmental Pathways Affecting Gene Expression
 
