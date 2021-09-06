@@ -1,3 +1,65 @@
+#' Process annotations
+#'
+#' @return
+#' \code{gs_annos} tibble: gene sets and annotations
+#'
+#' \code{annos} vector: annotations
+#' @keywords internal
+#'
+#' @importFrom magrittr %>%
+#' @examples \dontrun{
+#' anno_proc <- process_annotations()
+#' }
+process_annotations <- function() {
+  anno <- E.PATH::annotations
+  info <- anno[c("name", "info")]
+
+  anno_proc <- anno %>% dplyr::select("name")
+  info <- anno_proc %>%
+    dplyr::left_join(info, by = "name") %>%
+    dplyr::pull("info")
+
+  # extract annotations
+  anno_proc <- anno_proc %>%
+    tibble::add_column(dplyr::select(anno, dplyr::starts_with("anno_")))
+
+  # generate annotation list
+  annos <- anno_proc %>%
+    dplyr::select(dplyr::starts_with("anno_")) %>%
+    unlist(use.names = F) %>%
+    unique()
+
+  list(gs_annos = anno_proc, annos = annos[!is.na(annos) & annos != ""])
+}
+
+#' Process database
+#'
+#' @return
+#' \code{gs_genes} list: names: gene set names vector: genes
+#'
+#' \code{gs_info} tibble: gene set information
+#'
+#' \code{genes} vector: list of genes
+#' @keywords internal
+#'
+#' @importFrom magrittr %>%
+#' @importFrom rlang .data
+#' @examples \dontrun{
+#' data_proc <- process_database()
+#' }
+process_database <- function() {
+  data <- E.PATH::database
+
+  # filter categories and organisms
+  gs_info <- data$gs_info
+
+  # extract gene sets and genes
+  gs_genes <- data$gs_genes[gs_info$name]
+  genes <- gs_genes %>% unlist(use.names = F) %>% unique()
+
+  list(gs_genes = gs_genes, gs_info = gs_info, genes = genes)
+}
+
 #' Process text input
 #'
 #' Removes duplicate genes. If multiple values for the same gene are found, only
@@ -81,6 +143,9 @@ process_input_seurat <- function(seurat, id_1, id_2 = NULL, group = NULL,
 #' anno_assoc <- explore_annotation("Carcinogen")
 #' }
 explore_annotation <- function(annotation, genes = NULL) {
+  anno <- process_annotations()
+  data <- process_database()
+
   gs_annos <- anno$gs_annos
   gs_genes <- data$gs_genes
 
@@ -110,6 +175,9 @@ explore_annotation <- function(annotation, genes = NULL) {
 #' calc_pre <- calculate_pre(input)
 #' }
 calculate_pre <- function(input) {
+  anno <- process_annotations()
+  data <- process_database()
+
   annos <- anno$annos
   gs_annos <- anno$gs_annos
   gs_genes <- data$gs_genes
@@ -206,6 +274,7 @@ calculate_post <- function(stats_pre, input_size, universe) {
 #' calc <- calculate(input)
 #' }
 calculate <- function(input, universe = NULL) {
+  data <- process_database()
   gs_genes <- data$gs_genes
 
   if (is.null(universe)) universe <- gs_genes %>%
