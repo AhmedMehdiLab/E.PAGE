@@ -10,7 +10,8 @@ To run:
 
 ```
 library(E.PAGE)
-input <- process_input_text("GENE1 GENE2 GENE3") # gene list separated by spaces or commas
+genes <- "GENE1 GENE2 GENE3"       # a gene list separated by spaces or commas
+input <- process_input_text(genes) 
 results <- compute(input)
 ```
 
