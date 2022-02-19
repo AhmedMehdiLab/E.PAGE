@@ -10,14 +10,14 @@ This is a data analysis package allowing the user with a list of genes of intere
 ## Installation
 To install this package, run:
 
-```
+``` r
 remotes::install_github("AhmedMehdiLab/E.PAGE")
 ```
 
 ## Usage
 To use the package, run:
 
-```
+``` r
 library(E.PAGE)
 genes <- "GENE1 GENE2 GENE3"       # a gene list separated by spaces or commas
 input <- process_input_text(genes) 
