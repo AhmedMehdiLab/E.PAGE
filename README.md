@@ -27,7 +27,7 @@ results <- compute(input)
 
 Statistically enriched annotations are stored in a `tidyverse` `tibble`, and can be viewed with:
 
-```
+``` r
 results$stats
 ```
 
