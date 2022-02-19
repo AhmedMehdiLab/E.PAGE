@@ -11,6 +11,7 @@ This is a data analysis package allowing the user with a list of genes of intere
 To install this package, run:
 
 ``` r
+# install.packages("remotes")
 remotes::install_github("AhmedMehdiLab/E.PAGE")
 ```
 
