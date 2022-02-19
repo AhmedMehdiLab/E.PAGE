@@ -1,13 +1,21 @@
 # E.PAGE
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/AhmedMehdiLab/e.page/workflows/R-CMD-check/badge.svg)](https://github.com/AhmedMehdiLab/e.page/actions)
+[![R-CMD-check](https://github.com/AhmedMehdiLab/E.PAGE/workflows/R-CMD-check/badge.svg)](https://github.com/AhmedMehdiLab/E.PAGE/actions)
 <!-- badges: end -->
 
 Environmental Pathways Affecting Gene Expression
 
 This is a data analysis package allowing the user with a list of genes of interest to find enriched environmental pathways using a curated database.
 
-To run:
+## Installation
+To install this package, run:
+
+```
+remotes::install_github("AhmedMehdiLab/E.PAGE")
+```
+
+## Usage
+To use the package, run:
 
 ```
 library(E.PAGE)
