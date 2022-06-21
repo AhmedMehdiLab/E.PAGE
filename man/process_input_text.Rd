@@ -4,10 +4,12 @@
 \alias{process_input_text}
 \title{Process text input}
 \usage{
-process_input_text(text)
+process_input_text(text, capitalize = FALSE)
 }
 \arguments{
 \item{text}{character: input with genes and optionally values}
+
+\item{capitalize}{optional: boolean: force-capitalize all gene names}
 }
 \value{
 tibble: "gene" gene names "value" gene values

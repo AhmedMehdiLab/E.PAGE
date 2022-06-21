@@ -108,6 +108,7 @@ process_database <- function(data, categories = FALSE, organisms = FALSE) {
 #' the first value will be kept.
 #'
 #' @param text character: input with genes and optionally values
+#' @param capitalize optional: boolean: force-capitalize all gene names
 #'
 #' @return tibble: "gene" gene names "value" gene values
 #' @export
@@ -117,7 +118,7 @@ process_database <- function(data, categories = FALSE, organisms = FALSE) {
 #' @examples
 #' input <- process_input_text("FCN1 FTL CLU")
 #' input <- process_input_text("FCN1 0.1 FTL 0.8 CLU 0.05")
-process_input_text <- function(text) {
+process_input_text <- function(text, capitalize = FALSE) {
   tokens <- text %>%
     stringr::str_split("[ \t\r\n,;]") %>%
     unlist() %>%
@@ -132,6 +133,9 @@ process_input_text <- function(text) {
   genes <- tibble::tibble(gene = tokens, value = values) %>%
     tidyr::drop_na(.data$gene) %>%
     dplyr::distinct(.data$gene, .keep_all = T)
+
+  if (capitalize) genes$gene <- toupper(genes$gene)
+  return(genes)
 }
 
 #' Extract differentially expressed genes from Seurat object
