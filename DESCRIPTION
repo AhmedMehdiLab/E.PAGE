@@ -1,7 +1,7 @@
 Package: E.PAGE
 Type: Package
 Title: Environmental Pathways Affecting Gene Expression
-Version: 1.0.2
+Version: 1.1.0
 Authors@R:
     c(person("Lilin", "Yang", role = c("aut", "cre"),
              email = "lilin.yang@uq.net.au"),
@@ -17,9 +17,10 @@ License: file LICENSE
 URL: https://github.com/AhmedMehdiLab/E-PAGE
 BugReports: https://github.com/AhmedMehdiLab/E-PAGE/issues
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.0
+biocViews:
 Imports: 
-    Seurat (>= 3.2.3),
     ggplot2 (>= 3.3.3),
     magrittr (>= 2.0.1),
     dplyr (>= 1.0.2),
@@ -30,6 +31,14 @@ Imports:
     readr (>= 1.4.0),
     stringr (>= 1.4.0),
     tidyr (>= 1.1.2),
-    E.PATH
+    E.PATH,
+    clusterProfiler,
+    org.Hs.eg.db
+Suggests: 
+    limma,
+    mockery,
+    Seurat (>= 3.2.3),
+    testthat (>= 3.0.0)
 Remotes:
     github::AhmedMehdiLab/E.PATH
+Config/testthat/edition: 3

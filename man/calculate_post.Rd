@@ -21,8 +21,11 @@ Finish calculating overlap statistics
 }
 \examples{
 \dontrun{
+anno <- E.PATH::annotations
+data <- E.PATH::database
 input <- process_input_text("FCN1 0.1 FTL 0.8 CLU 0.05")
-calc_pre <- calculate_pre(input)
+
+calc_pre <- calculate_pre(input, anno$annos, anno$gs_annos, data$gs_genes)
 calc <- calculate_post(calc_pre$stats_pre, nrow(input), 10000)
 }
 }

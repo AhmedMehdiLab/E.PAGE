@@ -4,13 +4,44 @@
 \alias{compute}
 \title{Perform computations on imported and processed data}
 \usage{
-compute(input, universe = NULL, save = NULL)
+compute(
+  input,
+  anno = E.PATH::annotations,
+  data = E.PATH::database,
+  universe = NULL,
+  info_from = "database",
+  anno_opts = "file",
+  categories = FALSE,
+  organisms = FALSE,
+  org_db = NULL,
+  save = NULL
+)
 }
 \arguments{
 \item{input}{output of \code{\link{process_input_text}} or
 \code{\link{process_input_seurat}}}
 
+\item{anno}{optional: \code{\link[E.PATH:annotations]{E.PATH::annotations}}
+or output of \code{\link{import_annotations}}}
+
+\item{data}{optional: \code{\link[E.PATH:database]{E.PATH::database}} or
+output of \code{\link{import_database}}}
+
 \item{universe}{number of genes in universe}
+
+\item{info_from}{optional: \code{"annotation"} or (default) \code{"database"}}
+
+\item{anno_opts}{optional: \code{"name"} for gene set names, \code{"syms"}
+for gene set symbols, \code{"info"} for gene set descriptions,
+\code{"auto"} for automatically generated annotations and/or (default)
+\code{"file"} for manual annotations}
+
+\item{categories}{optional: categories to include; default all}
+
+\item{organisms}{optional: organisms to include; default all}
+
+\item{org_db}{optional: GO organism database e.g.
+\code{\link[org.Hs.eg.db:org.Hs.eg.db]{org.Hs.eg.db::org.Hs.eg.db}}}
 
 \item{save}{optional: path to save overlap statistics as \code{.csv}}
 }
@@ -23,6 +54,10 @@ compute(input, universe = NULL, save = NULL)
 Perform computations on imported and processed data
 }
 \examples{
+anno <- E.PATH::annotations
+data <- E.PATH::database
+
 input <- process_input_text("FCN1 0.1 FTL 0.8 CLU 0.05")
 results <- compute(input)
+results_custom <- compute(input, anno, data)
 }

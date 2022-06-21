@@ -1,0 +1,5 @@
+Gene Set,Annotation 1,Annotation 2,Annotation 3,Description
+SET_1,Asthma,Viral infection,Cell cycle,Cigarette smoking and viral infections
+SET_2,Insulin release,Leptin level decrease,Apoptosis,Genes up-regulated in pancreatic cancer compared to colon cancer
+SET_3,Apoptosis,Transcription regulation,Cell cycle,Genes down-regulated in viral infections versus bacterial infections
+SET_4,Neurotoxins,Carcinogen,,Genes affected by carcinogens

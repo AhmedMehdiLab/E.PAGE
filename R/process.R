@@ -1,4 +1,24 @@
+# constants
+split_1 <- stringr::str_c(sep = "|", " in comparison between ", " upon ",
+                          " in comparison of ", " in ", " during ", " after ")
+split_2 <- stringr::str_c(sep = "|", " versus ", " vs ", " before ", " after ",
+                          " compared to ")
+form_lhs <- stringr::str_glue("(?:{split_1})(.*)(?:{split_2})")
+form_rhs <- stringr::str_glue("(?:{split_2})(.*?)\\.?$")
+utils::globalVariables(c("."))
+
 #' Process annotations
+#'
+#' Choose annotations to include in annotation list, from gene set names, gene
+#' set symbols, gene set descriptions, annotations automatically extracted from
+#' gene set descriptions or manual annotations.
+#'
+#' @param anno output of \code{\link{import_annotations}}
+#' @param info tibble: "name" gene set name "info" gene set descriptions
+#' @param options \code{"name"} for gene set names, \code{"syms"} for gene set
+#'   symbols, \code{"info"} for gene set descriptions, \code{"auto"} for
+#'   automatically generated annotations and/or \code{"file"} for manual
+#'   annotations
 #'
 #' @return
 #' \code{gs_annos} tibble: gene sets and annotations
@@ -8,19 +28,30 @@
 #'
 #' @importFrom magrittr %>%
 #' @examples \dontrun{
-#' anno_proc <- process_annotations()
+#' anno_path <- system.file("extdata", "ex_anno.csv", package = "E.PAGE")
+#' anno <- import_annotations(anno_path, ",", TRUE, c(2, 4), 5)
+#' info <- anno[c("name", "info")]
+#'
+#' anno_proc <- process_annotations(anno, info, "file")
 #' }
-process_annotations <- function() {
-  anno <- E.PATH::annotations
-  info <- anno[c("name", "info")]
-
+process_annotations <- function(anno, info, options) {
   anno_proc <- anno %>% dplyr::select("name")
   info <- anno_proc %>%
     dplyr::left_join(info, by = "name") %>%
     dplyr::pull("info")
 
   # extract annotations
-  anno_proc <- anno_proc %>%
+  if ("name" %in% options) anno_proc$anno_name <- anno_proc$name
+  if ("syms" %in% options) anno_proc$anno_syms <-
+    stringr::str_match(anno_proc$name, "_(.*)")[, 2]
+  if ("info" %in% options) anno_proc$anno_info <- info
+  if ("auto" %in% options) anno_proc$anno_auto <-
+    ifelse(
+      stringr::str_detect(info, "up-regulated"),
+      stringr::str_match(info, form_lhs)[, 2],
+      stringr::str_match(info, form_rhs)[, 2]
+    )
+  if ("file" %in% options) anno_proc <- anno_proc %>%
     tibble::add_column(dplyr::select(anno, dplyr::starts_with("anno_")))
 
   # generate annotation list
@@ -34,6 +65,12 @@ process_annotations <- function() {
 
 #' Process database
 #'
+#' Choose database category and organism for use in analysis.
+#'
+#' @param data output of \code{\link{import_database}}
+#' @param categories optional: categories to include; default all
+#' @param organisms optional: organisms to include; default all
+#'
 #' @return
 #' \code{gs_genes} list: names: gene set names vector: genes
 #'
@@ -45,13 +82,18 @@ process_annotations <- function() {
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #' @examples \dontrun{
-#' data_proc <- process_database()
+#' data_path <- system.file("extdata", "ex_data.csv", package = "E.PAGE")
+#' data <- import_database(data_path, ",", FALSE, c(2, 4), 0)
+#'
+#' data_proc <- process_database(data, "Not assigned", "Not assigned")
 #' }
-process_database <- function() {
-  data <- E.PATH::database
-
+process_database <- function(data, categories = FALSE, organisms = FALSE) {
   # filter categories and organisms
   gs_info <- data$gs_info
+  if (is.null(categories) || categories != FALSE)
+    gs_info <- gs_info %>% dplyr::filter(.data$category %in% categories)
+  if (is.null(organisms) || organisms != FALSE)
+    gs_info <- gs_info %>% dplyr::filter(.data$organism %in% organisms)
 
   # extract gene sets and genes
   gs_genes <- data$gs_genes[gs_info$name]
@@ -111,10 +153,13 @@ process_input_text <- function(text) {
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #' @examples
-#' seurat <- E.PAGE:::seurat
+#' seu_path <- system.file("extdata", "ex_seurat.rds", package = "E.PAGE")
+#' seurat <- readRDS(seu_path)
+#'
 #' input <- process_input_seurat(seurat, 0)
 process_input_seurat <- function(seurat, id_1, id_2 = NULL, group = NULL,
                                  cluster = NULL, max_p = 0.05) {
+  uses("Seurat", stop, "'Seurat' is required for this feature")
   if (!is.null(id_2) && id_1 == id_2)
     return(tibble::tibble(gene = character(), value = numeric()))
 
@@ -127,9 +172,52 @@ process_input_seurat <- function(seurat, id_1, id_2 = NULL, group = NULL,
     dplyr::filter(.data$value <= max_p)
 }
 
+#' Synthesize annotation file from processed data
+#'
+#' @param gs_genes value from \code{\link{process_database}}
+#' @param org_db GO organism database e.g.
+#'   \code{\link[org.Hs.eg.db:org.Hs.eg.db]{org.Hs.eg.db::org.Hs.eg.db}}
+#' @param extra_args extra arguments for
+#'   \code{\link[clusterProfiler:enrichGO]{clusterProfiler::enrichGO}}
+#' @param limit_universe limit universe to genes contained in \code{gs_genes}
+#' @param save optional: path to save annotations as \code{.csv}
+#'
+#' @return tibble: raw annotations
+#' @export
+#'
+#' @importFrom org.Hs.eg.db org.Hs.eg.db
+#' @importFrom rlang !!!
+#' @examples
+#' gs_genes <- E.PATH::database$gs_genes
+#' synthesize_go_anno(gs_genes[0:2], limit_universe = FALSE)
+synthesize_go_anno <- function(gs_genes, org_db = org.Hs.eg.db,
+                               extra_args = list(keyType="SYMBOL", ont="ALL"),
+                               limit_universe = TRUE, save = NULL) {
+  # generate universe if data is universe
+  if (limit_universe)
+    extra_args$universe <- gs_genes %>% unlist(use.names = F) %>% toupper()
+
+  # find GO annotations and store in tibble
+  anno <- gs_genes %>%
+    purrr::map(toupper) %>%
+    purrr::map(~ rlang::exec(clusterProfiler::enrichGO,
+                             ., org_db, !!!extra_args)) %>%
+    purrr::modify(~ .@result$Description) %>%
+    sapply("length<-", max(lengths(.))) %>%
+    t() %>%
+    as.data.frame() %>%
+    tibble::as_tibble(rownames = "Annotation")
+
+  # store results
+  if (!is.null(save)) readr::write_csv(anno, save)
+  return(anno)
+}
+
 #' Find an annotation's associated gene sets and genes
 #'
 #' @param annotation annotation to explore
+#' @param gs_annos value from \code{\link{process_annotations}}
+#' @param gs_genes value from \code{\link{process_database}}
 #' @param genes optional: genes to match, or (default) all
 #'
 #' @return
@@ -140,15 +228,12 @@ process_input_seurat <- function(seurat, id_1, id_2 = NULL, group = NULL,
 #'
 #' @importFrom magrittr %>%
 #' @examples \dontrun{
-#' anno_assoc <- explore_annotation("Carcinogen")
+#' anno <- E.PATH::annotations
+#' data <- E.PATH::database
+#'
+#' anno_assoc <- explore_annotation("Carcinogen", anno$gs_annos, data$gs_genes)
 #' }
-explore_annotation <- function(annotation, genes = NULL) {
-  anno <- process_annotations()
-  data <- process_database()
-
-  gs_annos <- anno$gs_annos
-  gs_genes <- data$gs_genes
-
+explore_annotation <- function(annotation, gs_annos, gs_genes, genes = NULL) {
   index <- (gs_annos == annotation) %>% rowSums(na.rm = T) %>% as.logical()
   match <- gs_genes[gs_annos$name[index]]
   if (!is.null(genes))
@@ -163,6 +248,9 @@ explore_annotation <- function(annotation, genes = NULL) {
 #'
 #' @param input output of \code{\link{process_input_text}} or
 #'   \code{\link{process_input_seurat}}
+#' @param annos value from \code{\link{process_annotations}}
+#' @param gs_annos value from \code{\link{process_annotations}}
+#' @param gs_genes value from \code{\link{process_database}}
 #'
 #' @return \code{stats_pre} tibble: overlap statistics (incomplete)
 #'
@@ -171,31 +259,28 @@ explore_annotation <- function(annotation, genes = NULL) {
 #'
 #' @importFrom magrittr %>%
 #' @examples \dontrun{
+#' anno <- E.PATH::annotations
+#' data <- E.PATH::database
+#'
 #' input <- process_input_text("FCN1 0.1 FTL 0.8 CLU 0.05")
-#' calc_pre <- calculate_pre(input)
+#' calc_pre <- calculate_pre(input, anno$annos, anno$gs_annos, data$gs_genes)
 #' }
-calculate_pre <- function(input) {
-  anno <- process_annotations()
-  data <- process_database()
-
-  annos <- anno$annos
-  gs_annos <- anno$gs_annos
-  gs_genes <- data$gs_genes
-
+calculate_pre <- function(input, annos, gs_annos, gs_genes) {
   stat <- tibble::tibble(name = annos, n_sets = 0L, n_gene = 0L, n_hits = 0L,
-                         g_hits = "")
+                         p_hits = 0, g_hits = "")
   hits <- list()
 
   # iterate over annotations
   for (i in seq_along(annos)) {
     # get related genes and find overlap
-    overlap <- explore_annotation(annos[i])
+    overlap <- explore_annotation(annos[i], gs_annos, gs_genes)
     matches <- intersect(overlap$genes, input$gene)
 
     # store information
     stat$n_sets[i] <- length(overlap$names)
     stat$n_gene[i] <- length(overlap$genes)
     stat$n_hits[i] <- length(matches)
+    stat$p_hits[i] <- length(matches) / nrow(input) * 100
     stat$g_hits[i] <- matches %>% stringr::str_c(collapse = ", ")
     hits[[annos[i]]] <- matches
   }
@@ -215,8 +300,11 @@ calculate_pre <- function(input) {
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #' @examples \dontrun{
+#' anno <- E.PATH::annotations
+#' data <- E.PATH::database
 #' input <- process_input_text("FCN1 0.1 FTL 0.8 CLU 0.05")
-#' calc_pre <- calculate_pre(input)
+#'
+#' calc_pre <- calculate_pre(input, anno$annos, anno$gs_annos, data$gs_genes)
 #' calc <- calculate_post(calc_pre$stats_pre, nrow(input), 10000)
 #' }
 calculate_post <- function(stats_pre, input_size, universe) {
@@ -247,6 +335,7 @@ calculate_post <- function(stats_pre, input_size, universe) {
     `# gene sets` = .data$n_sets,
     `# genes` = .data$n_gene,
     `# matches` = .data$n_hits,
+    `% match` = .data$p_hits,
     `P-value` = .data$pvalue,
     `Adjusted P-value` = .data$adj_pv,
     `Odds Ratio` = .data$odds_r,
@@ -260,31 +349,49 @@ calculate_post <- function(stats_pre, input_size, universe) {
 #'
 #' @param input output of \code{\link{process_input_text}} or
 #'   \code{\link{process_input_seurat}}
-#' @param universe optional: number of genes in universe; default calculate from
-#'   \code{gs_genes}
+#' @param annos value from \code{\link{process_annotations}}
+#' @param gs_annos value from \code{\link{process_annotations}}
+#' @param gs_genes value from \code{\link{process_database}}
+#' @param univ_size optional: number of genes in universe; default calculated
+#'   from \code{gs_genes}
+#' @param org_db optional: GO organism database e.g.
+#'   \code{\link[org.Hs.eg.db:org.Hs.eg.db]{org.Hs.eg.db::org.Hs.eg.db}}
 #'
 #' @return \code{stats} tibble: overlap statistics
 #'
 #' \code{matches} list: names: annotations vector: matched genes
+#'
+#' \code{go} \code{NULL} or output of
+#'   \code{\link[clusterProfiler:enrichGO]{clusterProfiler::enrichGO}}
 #' @keywords internal
 #'
 #' @importFrom magrittr %>%
 #' @examples \dontrun{
+#' anno <- E.PATH::annotations
+#' data <- E.PATH::database
+#'
 #' input <- process_input_text("FCN1 0.1 FTL 0.8 CLU 0.05")
-#' calc <- calculate(input)
+#' calc <- calculate(input, anno$annos, anno$gs_annos, data$gs_genes)
 #' }
-calculate <- function(input, universe = NULL) {
-  data <- process_database()
-  gs_genes <- data$gs_genes
+calculate <- function(input, annos, gs_annos, gs_genes, univ_size = NULL,
+                      org_db = NULL) {
+  # extract background gene list
+  background <- gs_genes %>% unlist(use.names = F)
 
-  if (is.null(universe)) universe <- gs_genes %>%
-      unlist(use.names = F) %>%
+  # calculate size of universe
+  if (is.null(univ_size)) univ_size <- background %>%
       c(input$gene) %>%
+      toupper() %>%
       unique() %>%
       length()
 
-  calc_pre <- calculate_pre(input)
-  calc <- calculate_post(calc_pre$stats_pre, nrow(input), universe)
+  calc_pre <- calculate_pre(input, annos, gs_annos, gs_genes)
+  calc <- calculate_post(calc_pre$stats_pre, nrow(input), univ_size)
 
-  list(stats = calc, matches = calc_pre$matches)
+  go <- if (is.null(org_db)) NULL
+  else clusterProfiler::enrichGO(
+    toupper(input$gene), org_db, "SYMBOL", "ALL", universe = toupper(background)
+  )
+
+  list(stats = calc, matches = calc_pre$matches, go = go)
 }

@@ -26,8 +26,11 @@
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #' @examples
+#' anno <- E.PATH::annotations
+#' data <- E.PATH::database
+#'
 #' input <- process_input_text("FCN1 0.1 FTL 0.8 CLU 0.05")
-#' results <- compute(input)
+#' results <- compute(input, anno, data)
 #' over <- plot_overlap(results$matches, "Gene Value", input, results$stats)
 plot_overlap <- function(matches, value, input, stats, xpos = "bottom") {
   . <- NULL
@@ -79,8 +82,11 @@ plot_overlap <- function(matches, value, input, stats, xpos = "bottom") {
 #' @importFrom magrittr %>%
 #' @importFrom magrittr %<>%
 #' @examples
+#' anno <- E.PATH::annotations
+#' data <- E.PATH::database
+#'
 #' input <- process_input_text("FCN1 0.1 FTL 0.8 CLU 0.05")
-#' results <- compute(input)
+#' results <- compute(input, anno, data)
 #' stat <- plot_stats(results$stats, 'Fold Enrichment', 'Adjusted P-value')
 plot_stats <- function(stats, value, color, sort_y = FALSE) {
   # prepare axes

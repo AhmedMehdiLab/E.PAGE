@@ -4,7 +4,17 @@
 \alias{process_annotations}
 \title{Process annotations}
 \usage{
-process_annotations()
+process_annotations(anno, info, options)
+}
+\arguments{
+\item{anno}{output of \code{\link{import_annotations}}}
+
+\item{info}{tibble: "name" gene set name "info" gene set descriptions}
+
+\item{options}{\code{"name"} for gene set names, \code{"syms"} for gene set
+symbols, \code{"info"} for gene set descriptions, \code{"auto"} for
+automatically generated annotations and/or \code{"file"} for manual
+annotations}
 }
 \value{
 \code{gs_annos} tibble: gene sets and annotations
@@ -12,11 +22,17 @@ process_annotations()
 \code{annos} vector: annotations
 }
 \description{
-Process annotations
+Choose annotations to include in annotation list, from gene set names, gene
+set symbols, gene set descriptions, annotations automatically extracted from
+gene set descriptions or manual annotations.
 }
 \examples{
 \dontrun{
-anno_proc <- process_annotations()
+anno_path <- system.file("extdata", "ex_anno.csv", package = "E.PAGE")
+anno <- import_annotations(anno_path, ",", TRUE, c(2, 4), 5)
+info <- anno[c("name", "info")]
+
+anno_proc <- process_annotations(anno, info, "file")
 }
 }
 \keyword{internal}

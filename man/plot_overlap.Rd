@@ -33,7 +33,10 @@ Enrichment" or "Adjusted Fold Enrichment", if the value is NaN or an
 infinity, these will also be transparent.
 }
 \examples{
+anno <- E.PATH::annotations
+data <- E.PATH::database
+
 input <- process_input_text("FCN1 0.1 FTL 0.8 CLU 0.05")
-results <- compute(input)
+results <- compute(input, anno, data)
 over <- plot_overlap(results$matches, "Gene Value", input, results$stats)
 }

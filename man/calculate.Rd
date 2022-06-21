@@ -4,27 +4,42 @@
 \alias{calculate}
 \title{Calculate overlap statistics}
 \usage{
-calculate(input, universe = NULL)
+calculate(input, annos, gs_annos, gs_genes, univ_size = NULL, org_db = NULL)
 }
 \arguments{
 \item{input}{output of \code{\link{process_input_text}} or
 \code{\link{process_input_seurat}}}
 
-\item{universe}{optional: number of genes in universe; default calculate from
-\code{gs_genes}}
+\item{annos}{value from \code{\link{process_annotations}}}
+
+\item{gs_annos}{value from \code{\link{process_annotations}}}
+
+\item{gs_genes}{value from \code{\link{process_database}}}
+
+\item{univ_size}{optional: number of genes in universe; default calculated
+from \code{gs_genes}}
+
+\item{org_db}{optional: GO organism database e.g.
+\code{\link[org.Hs.eg.db:org.Hs.eg.db]{org.Hs.eg.db::org.Hs.eg.db}}}
 }
 \value{
 \code{stats} tibble: overlap statistics
 
 \code{matches} list: names: annotations vector: matched genes
+
+\code{go} \code{NULL} or output of
+\code{\link[clusterProfiler:enrichGO]{clusterProfiler::enrichGO}}
 }
 \description{
 Calculate overlap statistics
 }
 \examples{
 \dontrun{
+anno <- E.PATH::annotations
+data <- E.PATH::database
+
 input <- process_input_text("FCN1 0.1 FTL 0.8 CLU 0.05")
-calc <- calculate(input)
+calc <- calculate(input, anno$annos, anno$gs_annos, data$gs_genes)
 }
 }
 \keyword{internal}

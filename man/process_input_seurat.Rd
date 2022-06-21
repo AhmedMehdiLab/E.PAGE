@@ -35,6 +35,8 @@ Finds differentially expressed genes, records adjusted P-value and filters
 for values less than \code{max_p}.
 }
 \examples{
-seurat <- E.PAGE:::seurat
+seu_path <- system.file("extdata", "ex_seurat.rds", package = "E.PAGE")
+seurat <- readRDS(seu_path)
+
 input <- process_input_seurat(seurat, 0)
 }

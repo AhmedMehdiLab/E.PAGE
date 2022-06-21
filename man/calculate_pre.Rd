@@ -4,11 +4,17 @@
 \alias{calculate_pre}
 \title{Begin calculating overlap statistics}
 \usage{
-calculate_pre(input)
+calculate_pre(input, annos, gs_annos, gs_genes)
 }
 \arguments{
 \item{input}{output of \code{\link{process_input_text}} or
 \code{\link{process_input_seurat}}}
+
+\item{annos}{value from \code{\link{process_annotations}}}
+
+\item{gs_annos}{value from \code{\link{process_annotations}}}
+
+\item{gs_genes}{value from \code{\link{process_database}}}
 }
 \value{
 \code{stats_pre} tibble: overlap statistics (incomplete)
@@ -20,8 +26,11 @@ Begin calculating overlap statistics
 }
 \examples{
 \dontrun{
+anno <- E.PATH::annotations
+data <- E.PATH::database
+
 input <- process_input_text("FCN1 0.1 FTL 0.8 CLU 0.05")
-calc_pre <- calculate_pre(input)
+calc_pre <- calculate_pre(input, anno$annos, anno$gs_annos, data$gs_genes)
 }
 }
 \keyword{internal}
