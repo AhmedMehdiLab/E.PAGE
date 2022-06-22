@@ -54,10 +54,6 @@ for gene set symbols, \code{"info"} for gene set descriptions,
 Perform computations on imported and processed data
 }
 \examples{
-anno <- E.PATH::annotations
-data <- E.PATH::database
-
 input <- process_input_text("FCN1 0.1 FTL 0.8 CLU 0.05")
 results <- compute(input)
-results_custom <- compute(input, anno, data)
 }

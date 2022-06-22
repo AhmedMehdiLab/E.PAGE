@@ -10,8 +10,7 @@ Authors@R:
 Description: A package containing a curated database and enrichment tool to
     predict modules associated with gene-environment interactions. This package
     can also extract differentially-expressed genes from Seurat objects and
-    visually display enriched pathways. The functions used in this package are
-    based of those in the `glacier` package.
+    visually display enriched pathways.
 Depends: R (>= 4.0.0)
 License: file LICENSE
 URL: https://github.com/AhmedMehdiLab/E-PAGE

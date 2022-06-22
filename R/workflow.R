@@ -27,12 +27,8 @@
 #' @import E.PATH
 #' @importFrom magrittr %>%
 #' @examples
-#' anno <- E.PATH::annotations
-#' data <- E.PATH::database
-#'
 #' input <- process_input_text("FCN1 0.1 FTL 0.8 CLU 0.05")
 #' results <- compute(input)
-#' results_custom <- compute(input, anno, data)
 compute <- function(input, anno = E.PATH::annotations, data = E.PATH::database,
                     universe = NULL, info_from = "database", anno_opts = "file",
                     categories = FALSE, organisms = FALSE, org_db = NULL,

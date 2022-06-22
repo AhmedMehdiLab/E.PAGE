@@ -2,7 +2,7 @@
 % Please edit documentation in R/import.R
 \name{import_database}
 \alias{import_database}
-\title{Import delimited database file into glacier-specific format}
+\title{Import delimited database file into E.PAGE-specific format}
 \usage{
 import_database(path, delim, header, content = NULL, info = NULL)
 }
@@ -18,10 +18,10 @@ import_database(path, delim, header, content = NULL, info = NULL)
 \item{info}{column containing information; default none}
 }
 \value{
-glacier-specific imported database
+E.PAGE-specific imported database
 }
 \description{
-Import delimited database file into glacier-specific format
+Import delimited database file into E.PAGE-specific format
 }
 \examples{
 data_path <- system.file("extdata", "ex_data.csv", package = "E.PAGE")

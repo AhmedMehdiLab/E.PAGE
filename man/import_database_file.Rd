@@ -14,7 +14,7 @@ import_database_file(data_file, content, info)
 \item{info}{column containing information; default none}
 }
 \value{
-glacier-specific imported database
+E.PAGE-specific imported database
 }
 \description{
 Process tibble of database file contents

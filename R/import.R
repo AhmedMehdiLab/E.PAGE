@@ -64,7 +64,7 @@ import_delim_file <- function(file, content, info) {
 #' @param content vector: first and last column of content; default 2 to end
 #' @param info column containing information; default none
 #'
-#' @return glacier-specific imported annotations
+#' @return E.PAGE-specific imported annotations
 #' @keywords internal
 #'
 #' @importFrom magrittr %>%
@@ -79,7 +79,7 @@ import_annotations_file <- function(anno_file, content, info) {
     dplyr::rename(anno_ = dplyr::starts_with("data_"))
 }
 
-#' Import delimited annotation file into glacier-specific format
+#' Import delimited annotation file into E.PAGE-specific format
 #'
 #' @param path path to file
 #' @param delim file delimiter, usually \code{","} or \code{"\\t"}
@@ -87,7 +87,7 @@ import_annotations_file <- function(anno_file, content, info) {
 #' @param content vector: first and last column of content; default 2 to end
 #' @param info column containing information; default none
 #'
-#' @return glacier-specific imported annotations
+#' @return E.PAGE-specific imported annotations
 #' @export
 #'
 #' @importFrom magrittr %>%
@@ -107,7 +107,7 @@ import_annotations <- function(path, delim, header,
 #' @param content vector: first and last column of content; default 2 to end
 #' @param info column containing information; default none
 #'
-#' @return glacier-specific imported database
+#' @return E.PAGE-specific imported database
 #' @keywords internal
 #'
 #' @importFrom magrittr %>%
@@ -133,7 +133,7 @@ import_database_file <- function(data_file, content, info) {
   list(gs_genes = gs_genes, gs_info = gs_info)
 }
 
-#' Import delimited database file into glacier-specific format
+#' Import delimited database file into E.PAGE-specific format
 #'
 #' @param path path to file
 #' @param delim file delimiter, usually \code{","} or \code{"\\t"}
@@ -141,7 +141,7 @@ import_database_file <- function(data_file, content, info) {
 #' @param content vector: first and last column of content; default 2 to end
 #' @param info column containing information; default none
 #'
-#' @return glacier-specific imported database
+#' @return E.PAGE-specific imported database
 #' @export
 #'
 #' @importFrom magrittr %>%

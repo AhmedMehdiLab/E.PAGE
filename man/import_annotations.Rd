@@ -2,7 +2,7 @@
 % Please edit documentation in R/import.R
 \name{import_annotations}
 \alias{import_annotations}
-\title{Import delimited annotation file into glacier-specific format}
+\title{Import delimited annotation file into E.PAGE-specific format}
 \usage{
 import_annotations(path, delim, header, content = NULL, info = NULL)
 }
@@ -18,10 +18,10 @@ import_annotations(path, delim, header, content = NULL, info = NULL)
 \item{info}{column containing information; default none}
 }
 \value{
-glacier-specific imported annotations
+E.PAGE-specific imported annotations
 }
 \description{
-Import delimited annotation file into glacier-specific format
+Import delimited annotation file into E.PAGE-specific format
 }
 \examples{
 anno_path <- system.file("extdata", "ex_anno.csv", package = "E.PAGE")

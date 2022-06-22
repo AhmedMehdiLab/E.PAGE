@@ -14,7 +14,7 @@ import_annotations_file(anno_file, content, info)
 \item{info}{column containing information; default none}
 }
 \value{
-glacier-specific imported annotations
+E.PAGE-specific imported annotations
 }
 \description{
 Process tibble of annotation file contents
