@@ -82,5 +82,6 @@ data_raw <- import_database(data_path, ",", FALSE, c(2, 4), 0)
 data <- process_database(data_raw)
 
 # generate annotations and save to file (see documentation for function parameters)
-synthesize_go_anno(data$gs_genes[0:2], limit_universe = FALSE, save = "anno.csv")
+# performs GO enrichment for all gene sets, thus may take a long time with large databases
+synthesize_go_anno(data$gs_genes, limit_universe = FALSE, save = "anno.csv")
 ```
