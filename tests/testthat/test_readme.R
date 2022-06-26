@@ -34,9 +34,8 @@ test_that("Custom annotations work", {
 
 test_that("Auto-generate annotations works", {
   data_path <- system.file("extdata/ex_data.csv", package="E.PAGE")
-  data_raw <- import_database(data_path, ",", FALSE, c(2, 4), 0)
-  data <- process_database(data_raw)
+  data <- import_database(data_path, ",", FALSE, c(2, 4), 0)
 
-  go <- synthesize_go_anno(data$gs_genes[0], limit_universe = FALSE, save = "anno.csv")
+  go <- synthesize_go_anno(data, limit_universe = FALSE)
   expect_true(!is.null(go))
 })

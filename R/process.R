@@ -178,7 +178,8 @@ process_input_seurat <- function(seurat, id_1, id_2 = NULL, group = NULL,
 
 #' Synthesize annotation file from processed data
 #'
-#' @param gs_genes value from \code{\link{process_database}}
+#' @param data \code{\link[E.PATH:database]{E.PATH::database}} or output of
+#'   \code{\link{import_database}}
 #' @param org_db GO organism database e.g.
 #'   \code{\link[org.Hs.eg.db:org.Hs.eg.db]{org.Hs.eg.db::org.Hs.eg.db}}
 #' @param extra_args extra arguments for
@@ -192,11 +193,15 @@ process_input_seurat <- function(seurat, id_1, id_2 = NULL, group = NULL,
 #' @importFrom org.Hs.eg.db org.Hs.eg.db
 #' @importFrom rlang !!!
 #' @examples
-#' gs_genes <- E.PATH::database$gs_genes
-#' synthesize_go_anno(gs_genes[0:2], limit_universe = FALSE)
-synthesize_go_anno <- function(gs_genes, org_db = org.Hs.eg.db,
+#' data_path <- system.file("extdata/ex_data.csv", package="E.PAGE")
+#' data <- import_database(data_path, ",", FALSE, c(2, 4), 0)
+#'
+#' synthesize_go_anno(data, limit_universe = FALSE, save = "anno.csv")
+synthesize_go_anno <- function(data, org_db = org.Hs.eg.db,
                                extra_args = list(keyType="SYMBOL", ont="ALL"),
                                limit_universe = TRUE, save = NULL) {
+  gs_genes <- process_database(data)$gs_genes
+
   # generate universe if data is universe
   if (limit_universe)
     extra_args$universe <- gs_genes %>% unlist(use.names = F) %>% toupper()

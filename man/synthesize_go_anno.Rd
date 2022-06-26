@@ -5,7 +5,7 @@
 \title{Synthesize annotation file from processed data}
 \usage{
 synthesize_go_anno(
-  gs_genes,
+  data,
   org_db = org.Hs.eg.db,
   extra_args = list(keyType = "SYMBOL", ont = "ALL"),
   limit_universe = TRUE,
@@ -13,7 +13,8 @@ synthesize_go_anno(
 )
 }
 \arguments{
-\item{gs_genes}{value from \code{\link{process_database}}}
+\item{data}{\code{\link[E.PATH:database]{E.PATH::database}} or output of
+\code{\link{import_database}}}
 
 \item{org_db}{GO organism database e.g.
 \code{\link[org.Hs.eg.db:org.Hs.eg.db]{org.Hs.eg.db::org.Hs.eg.db}}}
@@ -32,6 +33,8 @@ tibble: raw annotations
 Synthesize annotation file from processed data
 }
 \examples{
-gs_genes <- E.PATH::database$gs_genes
-synthesize_go_anno(gs_genes[0:2], limit_universe = FALSE)
+data_path <- system.file("extdata/ex_data.csv", package="E.PAGE")
+data <- import_database(data_path, ",", FALSE, c(2, 4), 0)
+
+synthesize_go_anno(data, limit_universe = FALSE, save = "anno.csv")
 }

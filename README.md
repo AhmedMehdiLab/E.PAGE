@@ -78,10 +78,9 @@ Gene Ontology terms can be automatically generated from database files:
 ```r
 # import and process database file
 data_path <- system.file("extdata/ex_data.csv", package="E.PAGE")
-data_raw <- import_database(data_path, ",", FALSE, c(2, 4), 0)
-data <- process_database(data_raw)
+data <- import_database(data_path, ",", FALSE, c(2, 4), 0)
 
 # generate annotations and save to file (see documentation for function parameters)
 # performs GO enrichment for all gene sets, thus may take a long time with large databases
-synthesize_go_anno(data$gs_genes, limit_universe = FALSE, save = "anno.csv")
+synthesize_go_anno(data, limit_universe = FALSE, save = "anno.csv")
 ```
