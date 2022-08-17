@@ -4,7 +4,7 @@
 \alias{process_annotations}
 \title{Process annotations}
 \usage{
-process_annotations(anno, info, options)
+process_annotations(anno, info, options, gs_filter = "")
 }
 \arguments{
 \item{anno}{output of \code{\link{import_annotations}}}
@@ -15,6 +15,8 @@ process_annotations(anno, info, options)
 symbols, \code{"info"} for gene set descriptions, \code{"auto"} for
 automatically generated annotations and/or \code{"file"} for manual
 annotations}
+
+\item{gs_filter}{optional: filter for gene set names}
 }
 \value{
 \code{gs_annos} tibble: gene sets and annotations

@@ -41,6 +41,13 @@ Statistically enriched annotations are stored in a `tidyverse` `tibble`, and can
 results$stats
 ```
 
+Individual categories can be analysed as well:
+
+```r
+# result will be a list with CSGE (cigarette smoking), IGE (infection), DGE (diet) and TGE (toxin) headings
+results <- compute_sets(input)
+```
+
 Roxygen documentation is available for all functions.
 
 ### Gene Ontology analysis

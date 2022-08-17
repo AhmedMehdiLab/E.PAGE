@@ -4,7 +4,7 @@
 \alias{process_database}
 \title{Process database}
 \usage{
-process_database(data, categories = FALSE, organisms = FALSE)
+process_database(data, categories = FALSE, organisms = FALSE, gs_filter = "")
 }
 \arguments{
 \item{data}{output of \code{\link{import_database}}}
@@ -12,6 +12,8 @@ process_database(data, categories = FALSE, organisms = FALSE)
 \item{categories}{optional: categories to include; default all}
 
 \item{organisms}{optional: organisms to include; default all}
+
+\item{gs_filter}{optional: filter for gene set names}
 }
 \value{
 \code{gs_genes} list: names: gene set names vector: genes

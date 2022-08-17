@@ -9,7 +9,9 @@ test_that("Basic usage works", {
   input <- process_input_seurat(seurat_obj, 0)
 
   results <- compute(input)
+  res_set <- compute_sets(input)
   expect_true(!is.null(results$stats))
+  expect_true(!is.null(res_set))
 })
 
 test_that("Gene Ontology analysis works", {
