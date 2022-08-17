@@ -38,6 +38,8 @@ test_that("Auto-generate annotations works", {
   data_path <- system.file("extdata/ex_data.csv", package="E.PAGE")
   data <- import_database(data_path, ",", FALSE, c(2, 4), 0)
 
-  go <- synthesize_go_anno(data, limit_universe = FALSE)
+  go <- auto_anno(data, "GO", limit_universe = FALSE)
+  kegg <- auto_anno(data, "KEGG", limit_universe = FALSE)
   expect_true(!is.null(go))
+  expect_true(!is.null(kegg))
 })

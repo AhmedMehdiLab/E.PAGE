@@ -107,7 +107,9 @@ process_database <- function(data, categories = FALSE, organisms = FALSE, gs_fil
     gs_info <- gs_info %>% dplyr::filter(.data$organism %in% organisms)
 
   # extract gene sets and genes
-  gs_genes <- data$gs_genes[gs_info$name] %>% purrr::modify(toupper)
+  gs_genes <- data$gs_genes[gs_info$name]
+  if (!is.null(gs_genes))
+    gs_genes <- gs_genes %>% purrr::modify(toupper)
   genes <- gs_genes %>% unlist(use.names = F) %>% toupper() %>% unique()
 
   list(gs_genes = gs_genes, gs_info = gs_info, genes = genes)
@@ -187,41 +189,50 @@ process_input_seurat <- function(seurat, id_1, id_2 = NULL, group = NULL,
     dplyr::filter(.data$value <= max_p)
 }
 
-#' Synthesize annotation file from processed data
+#' Generate annotations from data
 #'
 #' @param data \code{\link[E.PATH:database]{E.PATH::database}} or output of
 #'   \code{\link{import_database}}
-#' @param org_db GO organism database e.g.
-#'   \code{\link[org.Hs.eg.db:org.Hs.eg.db]{org.Hs.eg.db::org.Hs.eg.db}}
-#' @param extra_args extra arguments for
-#'   \code{\link[clusterProfiler:enrichGO]{clusterProfiler::enrichGO}}
-#' @param limit_universe limit universe to genes contained in \code{gs_genes}
+#' @param mode "GO", "KEGG" or "MeSH"
+#' @param limit_universe limit_universe limit universe to genes contained in \code{gs_genes}
 #' @param save optional: path to save annotations as \code{.csv}
 #'
 #' @return tibble: raw annotations
 #' @export
 #'
 #' @importFrom org.Hs.eg.db org.Hs.eg.db
-#' @importFrom rlang !!!
 #' @examples
 #' data_path <- system.file("extdata/ex_data.csv", package="E.PAGE")
 #' data <- import_database(data_path, ",", FALSE, c(2, 4), 0)
 #'
-#' synthesize_go_anno(data, limit_universe = FALSE, save = "anno.csv")
-synthesize_go_anno <- function(data, org_db = org.Hs.eg.db,
-                               extra_args = list(keyType="SYMBOL", ont="ALL"),
-                               limit_universe = TRUE, save = NULL) {
-  gs_genes <- process_database(data)$gs_genes
+#' auto_anno(data, "GO", limit_universe = FALSE, save = "anno.csv")
+auto_anno <- function(data, mode, limit_universe=TRUE, save = NULL) {
+  # set up
+  data_proc <- process_database(data)
+  ez_univ <- if (limit_universe) AnnotationDbi::mapIds(org.Hs.eg.db, data_proc$genes, "ENTREZID", "SYMBOL")
 
-  # generate universe if data is universe
-  if (limit_universe)
-    extra_args$universe <- gs_genes %>% unlist(use.names = F) %>% toupper()
+  if (mode == "MeSH") {
+    hub <- AnnotationHub::AnnotationHub(localHub=TRUE)
+    hsa <- AnnotationHub::query(hub, c("MeSHDb", "Homo sapiens"))
+    mdb <- MeSHDbi::MeSHDb(hsa[[1]])
+  }
 
-  # find GO annotations and store in tibble
-  anno <- gs_genes %>%
+  find_anno <- function(genes) {
+    ez_gene <- AnnotationDbi::mapIds(org.Hs.eg.db, genes, "ENTREZID", "SYMBOL")
+
+    if (mode == "GO") {
+      return(clusterProfiler::enrichGO(ez_gene, "org.Hs.eg.db", ont="ALL", universe=ez_univ))
+    } else if (mode == "KEGG") {
+      return(clusterProfiler::enrichKEGG(ez_gene, universe=ez_univ))
+    } else if (mode == "MeSH") {
+      return(meshes::enrichMeSH(gene, mdb, universe=univ_ez))
+    }
+  }
+
+  # find annotations
+  anno <- data_proc$gs_genes %>%
     purrr::map(toupper) %>%
-    purrr::map(~ rlang::exec(clusterProfiler::enrichGO,
-                             ., org_db, !!!extra_args)) %>%
+    purrr::map(find_anno) %>%
     purrr::modify(~ .@result$Description) %>%
     sapply("length<-", max(lengths(.))) %>%
     t() %>%

@@ -88,6 +88,8 @@ data_path <- system.file("extdata/ex_data.csv", package="E.PAGE")
 data <- import_database(data_path, ",", FALSE, c(2, 4), 0)
 
 # generate annotations and save to file (see documentation for function parameters)
-# performs GO enrichment for all gene sets, thus may take a long time with large databases
-synthesize_go_anno(data, limit_universe = FALSE, save = "anno.csv")
+# performs enrichment for all gene sets, thus may take a long time with large databases
+auto_anno(data, "GO", limit_universe = FALSE, save = "anno.csv")
+auto_anno(data, "KEGG", limit_universe = FALSE, save = "anno.csv")
+auto_anno(data, "MeSH", limit_universe = FALSE, save = "anno.csv")
 ```

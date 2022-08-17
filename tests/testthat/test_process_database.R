@@ -14,7 +14,7 @@ test_that("complex databases can be processed", {
       gs_genes = list() %>% set_names(),
       gs_info = tibble(name = character(), info = character(), category = none,
                        organism = none),
-      genes = NULL
+      genes = character()
     )
   )
   expect_equal(
@@ -22,7 +22,7 @@ test_that("complex databases can be processed", {
     list(
       gs_genes = list(SET_1 = c("FCN1", "FTL", "CLU"),
                       SET_2 = c("PDK4", "PFKFB3"),
-                      SET_3 = c("Bim", "CLU", "FoxO3a"),
+                      SET_3 = c("BIM", "CLU", "FOXO3A"),
                       SET_4 = c("FTL", "SOX2", "FCN1")),
       gs_info = tibble(
         name = c("SET_1", "SET_2", "SET_3", "SET_4"),
@@ -30,7 +30,7 @@ test_that("complex databases can be processed", {
         category = factor("Not assigned"),
         organism = factor("Not assigned")
       ),
-      genes = c("FCN1", "FTL", "CLU", "PDK4", "PFKFB3", "Bim", "FoxO3a", "SOX2")
+      genes = c("FCN1", "FTL", "CLU", "PDK4", "PFKFB3", "BIM", "FOXO3A", "SOX2")
     )
   )
 })
