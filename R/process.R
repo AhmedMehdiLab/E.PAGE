@@ -196,7 +196,7 @@ process_input_seurat <- function(seurat, id_1, id_2 = NULL, group = NULL,
 #' @param data \code{\link[E.PATH:database]{E.PATH::database}} or output of
 #'   \code{\link{import_database}}
 #' @param mode "GO", "KEGG" or "MeSH"
-#' @param limit_universe limit_universe limit universe to genes contained in \code{gs_genes}
+#' @param limit_universe limit universe to genes contained in \code{data}
 #' @param save optional: path to save annotations as \code{.csv}
 #'
 #' @return tibble: raw annotations
@@ -208,7 +208,7 @@ process_input_seurat <- function(seurat, id_1, id_2 = NULL, group = NULL,
 #' data <- import_database(data_path, ",", FALSE, c(2, 4), 0)
 #'
 #' auto_anno(data, "GO")
-auto_anno <- function(data, mode, limit_universe=TRUE, save = NULL) {
+auto_anno <- function(data, mode, limit_universe=FALSE, save = NULL) {
   # set up
   data_proc <- process_database(data)
   univ <- if (limit_universe) data_proc$genes
@@ -226,7 +226,7 @@ auto_anno <- function(data, mode, limit_universe=TRUE, save = NULL) {
       # hsa <- AnnotationHub::query(hub, c("MeSHDb", "Homo sapiens"))
       mdb <- MeSHDbi::MeSHDb(hub[["AH100340"]]) # Homo sapiens v3
 
-      return(meshes::enrichMeSH(genes, mdb, universe=genes))
+      return(meshes::enrichMeSH(ez_gene, mdb, universe=ez_univ))
     }
   }
 
