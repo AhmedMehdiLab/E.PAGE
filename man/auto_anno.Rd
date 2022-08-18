@@ -4,7 +4,7 @@
 \alias{auto_anno}
 \title{Generate annotations from data}
 \usage{
-auto_anno(data, mode, limit_universe = TRUE, save = NULL)
+auto_anno(data, mode, limit_universe = FALSE, save = NULL)
 }
 \arguments{
 \item{data}{\code{\link[E.PATH:database]{E.PATH::database}} or output of
@@ -12,7 +12,7 @@ auto_anno(data, mode, limit_universe = TRUE, save = NULL)
 
 \item{mode}{"GO", "KEGG" or "MeSH"}
 
-\item{limit_universe}{limit_universe limit universe to genes contained in \code{gs_genes}}
+\item{limit_universe}{limit universe to genes contained in \code{data}}
 
 \item{save}{optional: path to save annotations as \code{.csv}}
 }
@@ -26,5 +26,5 @@ Generate annotations from data
 data_path <- system.file("extdata/ex_data.csv", package="E.PAGE")
 data <- import_database(data_path, ",", FALSE, c(2, 4), 0)
 
-auto_anno(data, "GO", limit_universe = FALSE)
+auto_anno(data, "GO")
 }
