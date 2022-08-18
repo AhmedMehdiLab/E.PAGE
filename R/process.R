@@ -36,6 +36,7 @@ utils::globalVariables(c("."))
 #' anno_proc <- process_annotations(anno, info, "file")
 #' }
 process_annotations <- function(anno, info, options, gs_filter="") {
+  name <- NULL
   if (gs_filter != "") {
     anno <- anno %>% dplyr::filter(grepl(gs_filter, name))
   }
@@ -97,6 +98,7 @@ process_database <- function(data, categories = FALSE, organisms = FALSE, gs_fil
   # filter categories and organisms
   gs_info <- data$gs_info
 
+  name <- NULL
   if (gs_filter != "") {
     gs_info <- gs_info %>% dplyr::filter(grepl(gs_filter, name))
   }
@@ -205,17 +207,12 @@ process_input_seurat <- function(seurat, id_1, id_2 = NULL, group = NULL,
 #' data_path <- system.file("extdata/ex_data.csv", package="E.PAGE")
 #' data <- import_database(data_path, ",", FALSE, c(2, 4), 0)
 #'
-#' auto_anno(data, "GO", limit_universe = FALSE, save = "anno.csv")
+#' auto_anno(data, "GO")
 auto_anno <- function(data, mode, limit_universe=TRUE, save = NULL) {
   # set up
   data_proc <- process_database(data)
+  univ <- if (limit_universe) data_proc$genes
   ez_univ <- if (limit_universe) AnnotationDbi::mapIds(org.Hs.eg.db, data_proc$genes, "ENTREZID", "SYMBOL")
-
-  if (mode == "MeSH") {
-    hub <- AnnotationHub::AnnotationHub(localHub=TRUE)
-    hsa <- AnnotationHub::query(hub, c("MeSHDb", "Homo sapiens"))
-    mdb <- MeSHDbi::MeSHDb(hsa[[1]])
-  }
 
   find_anno <- function(genes) {
     ez_gene <- AnnotationDbi::mapIds(org.Hs.eg.db, genes, "ENTREZID", "SYMBOL")
@@ -225,7 +222,11 @@ auto_anno <- function(data, mode, limit_universe=TRUE, save = NULL) {
     } else if (mode == "KEGG") {
       return(clusterProfiler::enrichKEGG(ez_gene, universe=ez_univ))
     } else if (mode == "MeSH") {
-      return(meshes::enrichMeSH(gene, mdb, universe=univ_ez))
+      hub <- AnnotationHub::AnnotationHub()
+      # hsa <- AnnotationHub::query(hub, c("MeSHDb", "Homo sapiens"))
+      mdb <- MeSHDbi::MeSHDb(hub[["AH100340"]]) # Homo sapiens v3
+
+      return(meshes::enrichMeSH(genes, mdb, universe=genes))
     }
   }
 

@@ -40,6 +40,8 @@ test_that("Auto-generate annotations works", {
 
   go <- auto_anno(data, "GO", limit_universe = FALSE)
   kegg <- auto_anno(data, "KEGG", limit_universe = FALSE)
+  mesh <- auto_anno(data, "MeSH", limit_universe = FALSE)
   expect_true(!is.null(go))
   expect_true(!is.null(kegg))
+  expect_true(!is.null(mesh))
 })

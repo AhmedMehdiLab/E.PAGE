@@ -26,5 +26,5 @@ Generate annotations from data
 data_path <- system.file("extdata/ex_data.csv", package="E.PAGE")
 data <- import_database(data_path, ",", FALSE, c(2, 4), 0)
 
-auto_anno(data, "GO", limit_universe = FALSE, save = "anno.csv")
+auto_anno(data, "GO", limit_universe = FALSE)
 }

@@ -32,7 +32,11 @@ Imports:
     tidyr (>= 1.1.2),
     E.PATH,
     clusterProfiler,
-    org.Hs.eg.db
+    org.Hs.eg.db,
+    AnnotationDbi,
+    AnnotationHub,
+    MeSHDbi,
+    meshes
 Suggests: 
     limma,
     mockery,
